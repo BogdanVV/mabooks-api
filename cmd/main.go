@@ -1,25 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/bogdanvv/mabooks-api/pkg/handlers"
+	"github.com/bogdanvv/mabooks-api/pkg/repository"
+	"github.com/bogdanvv/mabooks-api/pkg/services"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"log"
 )
 
 func main() {
-	router := gin.Default()
-	router.GET("/health", checkHealth)
-	auth := router.Group("/auth")
-	{
-		auth.POST("/sign-up")
-		auth.POST("/login")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Failed to load .env")
 	}
 
-	router.Run()
-	fmt.Printf("Server is running on port :%s", "8080")
-}
+	db, err := repository.ConnectToDB()
+	if err != nil {
+		log.Fatal("Failed to connect to db")
+	}
 
-func checkHealth(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "API is healthy"})
+	repository := repository.NewRepository(db)
+	services := services.NewServices(repository)
+	handlers := handlers.NewHandlers(services)
+
+	router := handlers.InitRoutes()
+
+	router.Run(":9999")
 }
