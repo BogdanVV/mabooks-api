@@ -1,8 +1,15 @@
-# REST API with Postgres I'm using for learning Go
+# Basic REST API built with `gin` + `Postgres`
 
-The idea is to create an app (with both BE and FE (perhaps, even with mobile app) parts) where you can track the books you've read.
+I'm using this project for learning Go and getting more familiar with SQL.
+
+The idea is to create an app (with both BE and FE (perhaps, even with mobile app) parts) where you can track the books you've read. Maybe with some additional stuff, dunno yet.
 
 Not sure what the business logic will be exactly though. Gonna figure it out during the process.
+
+## Prerequisites:
+
+- Go version >= `1.19.2`
+- Docker
 
 ## 1. Create and run Postgres in Docker container:
 
@@ -12,13 +19,15 @@ Not sure what the business logic will be exactly though. Gonna figure it out dur
 $ docker run --name mabooks-db -p 5430:5431 -e POSTGRES_PASSWORD=qweqwe -d postgres
 ```
 
-### If you want to start this app again:
+_If you don't have [postgres docker image](https://hub.docker.com/_/postgres) installed, this command will pull it for you from dockerhub automatically. At least, I think so. Too lazy to check that :) If I'm wrong, run `$ docker pull postgres` first\_
+
+### If you already have the container and just wanna start it:
 
 ```bash
 $ docker start mabooks-db
 ```
 
-## 2. Do migrations for db:
+## 2. Do initial migration for db:
 
 ```bash
 $ migrate -path ./migrations -database 'postgres://postgres:qweqwe@localhost:5430/postgres?sslmode=disable' up
