@@ -26,7 +26,7 @@ func (h *Handlers) InitRoutes() *gin.Engine {
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/login", h.login)
-		// REMOVE /token eventually
+		// TODO: REMOVE /token eventually
 		auth.POST("/token", h.handleToken)
 	}
 

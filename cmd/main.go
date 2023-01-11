@@ -1,12 +1,14 @@
 package main
 
 import (
+	"log"
+
+	// "github.com/bogdanvv/mabooks-api/pkg/examples"
 	"github.com/bogdanvv/mabooks-api/pkg/handlers"
 	"github.com/bogdanvv/mabooks-api/pkg/repository"
 	"github.com/bogdanvv/mabooks-api/pkg/services"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 func main() {
@@ -25,6 +27,10 @@ func main() {
 	handlers := handlers.NewHandlers(services)
 
 	router := handlers.InitRoutes()
+
+	/*
+		examples.ExternalCallToAnotherAPI()
+	*/
 
 	router.Run(":9999")
 }
