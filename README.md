@@ -64,3 +64,6 @@ $ psql -U postgres
 ```bash
 $ update schema_migrations set version='000001', dirty=false;
 ```
+
+- ### Nice example of creating tables with relations
+  [here](https://hasura.io/learn/database/postgresql/core-concepts/6-postgresql-relationships/)

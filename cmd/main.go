@@ -34,3 +34,13 @@ func main() {
 
 	router.Run(":9999")
 }
+
+/*
+	TODO: REMOVE /token endpoint eventually
+*/
+
+/*
+	TODO: add refresh-access tokens functionality with redis and postgres in container.
+	might help https://dou.ua/forums/topic/32941/
+	docker-compose?
+*/

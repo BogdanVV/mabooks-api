@@ -53,3 +53,5 @@ func (h *Handlers) handleToken(c *gin.Context) {
 
 	h.services.HandleToken(authHeaderSplit[1])
 }
+
+func (h *Handlers) reissueTokens(c *gin.Context) {}

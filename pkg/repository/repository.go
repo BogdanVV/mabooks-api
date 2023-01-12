@@ -9,12 +9,13 @@ import (
 )
 
 const (
-	host        = "localhost"
-	port        = "5430"
-	user        = "postgres"
-	password    = "qweqwe"
-	dbname      = "postgres"
-	users_table = "users"
+	host             = "localhost"
+	port             = "5430"
+	user             = "postgres"
+	password         = "qweqwe"
+	dbname           = "postgres"
+	users_table      = "users"
+	read_books_table = "read_books"
 )
 
 type Authorization interface {
@@ -22,13 +23,21 @@ type Authorization interface {
 	GetUserByLoginData(email string, hashedPassword string) (models.User, error)
 }
 
+type ReadBookRepository interface {
+	CreateReadBook(userId string, readBook models.ReadBookInput) (string, error)
+	GetBookById(bookId string) (models.ReadBook, error)
+	GetAllBooksByUserId(userId string) ([]models.ReadBook, error)
+}
+
 type Repository struct {
 	Authorization
+	ReadBookRepository
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthDB(db),
+		Authorization:      NewAuthDB(db),
+		ReadBookRepository: NewReadBookDB(db),
 	}
 }
 

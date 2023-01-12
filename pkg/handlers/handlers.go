@@ -22,17 +22,22 @@ func (h *Handlers) InitRoutes() *gin.Engine {
 	router.GET("/health", checkHealth)
 
 	auth := router.Group("/auth")
-	auth.Use(middleware.MiddlewareExample)
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/login", h.login)
-		// TODO: REMOVE /token eventually
+		// auth.POST("/tokens", h.reissueTokens)
 		auth.POST("/token", h.handleToken)
 	}
 
 	api := router.Group("/api")
+	api.Use(middleware.Authenticate)
 	{
-		api.GET("/health", checkHealth)
+		readBooks := api.Group("/read-books")
+		{
+			readBooks.POST("/", h.CreateBook)
+			readBooks.GET("/:bookId", h.GetBookById)
+			readBooks.GET("/", h.GetAllBooksByUserId)
+		}
 	}
 
 	return router

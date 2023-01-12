@@ -18,6 +18,7 @@ type AuthorizationService struct {
 type jwtTokenClaims struct {
 	jwt.Claims
 	Id         string `json:"id"`
+	Role       string `json:"role"`
 	Expiration int64  `json:"expiration"`
 }
 
@@ -29,12 +30,12 @@ func (s *AuthorizationService) SignUp(signUpData models.SignUpBody) (string, err
 	signUpData.Password = createHashPassword(signUpData.Password)
 	signUpData.Role = "user"
 
-	_, err := s.repo.CreateUser(signUpData)
+	id, err := s.repo.CreateUser(signUpData)
 	if err != nil {
 		fmt.Println("err>>>", err.Error())
 	}
 
-	return "uuid", nil
+	return id, nil
 }
 
 func (s *AuthorizationService) Login(loginBody models.LoginBody) (models.LoginResponse, error) {
@@ -47,6 +48,7 @@ func (s *AuthorizationService) Login(loginBody models.LoginBody) (models.LoginRe
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtTokenClaims{
 		Id:         user.Id,
+		Role:       user.Role,
 		Expiration: time.Now().Add(time.Hour * 720).Unix(),
 	})
 
@@ -61,18 +63,29 @@ func (s *AuthorizationService) Login(loginBody models.LoginBody) (models.LoginRe
 	loginResponse.Phone = user.Phone
 	loginResponse.Role = user.Role
 	loginResponse.AccessToken = token
+	loginResponse.IsActive = user.IsActive
 
 	return loginResponse, nil
 }
 
 func (s *AuthorizationService) HandleToken(token string) {
-	token1, err := jwt.Parse(token, validateToken)
+	tokenParsed, err := jwt.Parse(token, validateToken)
 
-	if claims, ok := token1.Claims.(jwt.MapClaims); ok && token1.Valid {
+	if claims, ok := tokenParsed.Claims.(jwt.MapClaims); ok && tokenParsed.Valid {
 		fmt.Printf("claims[id]>>> %s \n", claims["id"])
+		fmt.Printf("claims[role]>>> %s \n", claims["role"])
 	} else {
 		fmt.Println(err)
 	}
+}
+
+func (s *AuthorizationService) ReissueTokens(refreshToken string) (models.TokenPair, error) {
+	tokenPair := models.TokenPair{
+		AccessToken:  "access_token",
+		RefreshToken: "refresh_token",
+	}
+
+	return tokenPair, nil
 }
 
 func validateToken(token *jwt.Token) (interface{}, error) {
