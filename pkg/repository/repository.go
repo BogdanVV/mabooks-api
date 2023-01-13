@@ -27,6 +27,8 @@ type ReadBookRepository interface {
 	CreateReadBook(userId string, readBook models.ReadBookInput) (string, error)
 	GetBookById(bookId string) (models.ReadBook, error)
 	GetAllBooksByUserId(userId string) ([]models.ReadBook, error)
+	UpdateBook(bookId string, updateInput models.ReadBookInput) (models.ReadBook, error)
+	DeleteBook(bookId string) (string, error)
 }
 
 type Repository struct {

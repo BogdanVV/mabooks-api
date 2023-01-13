@@ -35,8 +35,10 @@ func (h *Handlers) InitRoutes() *gin.Engine {
 		readBooks := api.Group("/read-books")
 		{
 			readBooks.POST("/", h.CreateBook)
-			readBooks.GET("/:bookId", h.GetBookById)
 			readBooks.GET("/", h.GetAllBooksByUserId)
+			readBooks.GET("/:bookId", h.GetBookById)
+			readBooks.PATCH("/:bookId", h.UpdateBook)
+			readBooks.DELETE("/:bookId", h.DeleteBook)
 		}
 	}
 

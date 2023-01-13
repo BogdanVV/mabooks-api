@@ -58,3 +58,28 @@ func (h *Handlers) GetAllBooksByUserId(c *gin.Context) {
 
 	c.JSON(http.StatusOK, books)
 }
+
+func (h *Handlers) UpdateBook(c *gin.Context) {
+	bookId := c.Param("bookId")
+	var book models.ReadBookInput
+	c.Bind(&book)
+
+	bookResult, err := h.services.UpdateBook(bookId, book)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, bookResult)
+}
+
+func (h *Handlers) DeleteBook(c *gin.Context) {
+	bookId := c.Param("bookId")
+	id, err := h.services.DeleteBook(bookId)
+	if err != nil {
+		c.String(http.StatusNotFound, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, id)
+}

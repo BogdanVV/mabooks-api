@@ -24,3 +24,11 @@ func (s *ReadBookServices) GetBookById(bookId string) (models.ReadBook, error) {
 func (s *ReadBookServices) GetAllBooksByUserId(userId string) ([]models.ReadBook, error) {
 	return s.repo.GetAllBooksByUserId(userId)
 }
+
+func (s *ReadBookServices) DeleteBook(bookId string) (string, error) {
+	return s.repo.DeleteBook(bookId)
+}
+
+func (s *ReadBookServices) UpdateBook(bookId string, updateBody models.ReadBookInput) (models.ReadBook, error) {
+	return s.repo.UpdateBook(bookId, updateBody)
+}
