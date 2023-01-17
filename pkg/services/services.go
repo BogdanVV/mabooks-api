@@ -20,9 +20,11 @@ type ReadBook interface {
 
 type Authorization interface {
 	SignUp(signUpBody models.SignUpBody) (string, error)
-	Login(signInBody models.LoginBody) (models.LoginResponse, error)
+	Login(models.User) (models.LoginResponse, error)
 	HandleToken(token string)
 	ReissueTokens(refreshToken string) (models.TokenPair, error)
+	GetUserByEmail(email string) (models.User, error)
+	VerifyPassword(password string, user models.User) error
 }
 
 func NewServices(repo *repository.Repository) *Services {

@@ -20,7 +20,7 @@ const (
 
 type Authorization interface {
 	CreateUser(signUpBody models.SignUpBody) (string, error)
-	GetUserByLoginData(email string, hashedPassword string) (models.User, error)
+	GetUserByEmail(email string) (models.User, error)
 }
 
 type ReadBookRepository interface {

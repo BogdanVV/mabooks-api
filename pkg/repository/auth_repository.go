@@ -27,10 +27,10 @@ func (db *AuthDB) CreateUser(signUpBody models.SignUpBody) (string, error) {
 	return id, nil
 }
 
-func (db *AuthDB) GetUserByLoginData(email string, hashedPassword string) (models.User, error) {
+func (db *AuthDB) GetUserByEmail(email string) (models.User, error) {
 	var user models.User
-	query := fmt.Sprintf("SELECT * FROM %s WHERE email = $1 AND password = $2", users_table)
-	err := db.db.Get(&user, query, email, hashedPassword)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE email = $1", users_table)
+	err := db.db.Get(&user, query, email)
 
 	return user, err
 }

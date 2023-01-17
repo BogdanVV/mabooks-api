@@ -1,13 +1,14 @@
 package services
 
 import (
-	"crypto/sha256"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
 	models "github.com/bogdanvv/mabooks-api"
 	"github.com/bogdanvv/mabooks-api/pkg/repository"
+	"github.com/bogdanvv/mabooks-api/pkg/utils"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -27,24 +28,37 @@ func NewAuthorizationService(repo repository.Authorization) *AuthorizationServic
 }
 
 func (s *AuthorizationService) SignUp(signUpData models.SignUpBody) (string, error) {
-	signUpData.Password = createHashPassword(signUpData.Password)
+	signUpData.Password = utils.CreateHashPassword(signUpData.Password)
 	signUpData.Role = "user"
 
 	id, err := s.repo.CreateUser(signUpData)
 	if err != nil {
-		fmt.Println("err>>>", err.Error())
+		return "", err
 	}
 
 	return id, nil
 }
 
-func (s *AuthorizationService) Login(loginBody models.LoginBody) (models.LoginResponse, error) {
-	var loginResponse models.LoginResponse
-	hashedPassword := createHashPassword(loginBody.Password)
-	user, err := s.repo.GetUserByLoginData(loginBody.Email, hashedPassword)
+func (s *AuthorizationService) GetUserByEmail(email string) (models.User, error) {
+	user, err := s.repo.GetUserByEmail(email)
 	if err != nil {
-		return loginResponse, err
+		return user, err
 	}
+
+	return user, nil
+}
+
+func (s *AuthorizationService) VerifyPassword(password string, user models.User) error {
+	hashedPassword := utils.CreateHashPassword(password)
+	if hashedPassword == user.Password {
+		return nil
+	}
+
+	return errors.New("Invalid password")
+}
+
+func (s *AuthorizationService) Login(user models.User) (models.LoginResponse, error) {
+	var loginResponse models.LoginResponse
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtTokenClaims{
 		Id:         user.Id,
@@ -96,10 +110,4 @@ func validateToken(token *jwt.Token) (interface{}, error) {
 	fmt.Println("token.Header[alg]", token.Header["alg"])
 
 	return []byte(os.Getenv("JWT_SECRET")), nil
-}
-
-func createHashPassword(password string) string {
-	hashedPassword := sha256.New()
-	hashedPassword.Write([]byte(password))
-	return fmt.Sprintf("%x", hashedPassword.Sum([]byte(os.Getenv("HASH_SALT"))))
 }

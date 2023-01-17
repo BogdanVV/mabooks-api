@@ -9,8 +9,8 @@ type SignUpBody struct {
 }
 
 type LoginBody struct {
-	Email    string `form:"email" binding:"required"`
-	Password string `form:"password" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type User struct {

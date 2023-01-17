@@ -16,6 +16,11 @@ func (h *Handlers) signUp(c *gin.Context) {
 		return
 	}
 
+	_, err = h.services.GetUserByEmail(input.Email)
+	if err == nil {
+		c.String(http.StatusConflict, "User with this email already exists")
+	}
+
 	id, err := h.services.SignUp(input)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
@@ -26,16 +31,27 @@ func (h *Handlers) signUp(c *gin.Context) {
 
 func (h *Handlers) login(c *gin.Context) {
 	var loginInput models.LoginBody
-	err := c.Bind(&loginInput)
-
+	err := c.BindJSON(&loginInput)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	response, err := h.services.Login(loginInput)
+	user, err := h.services.GetUserByEmail(loginInput.Email)
 	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
+		c.String(http.StatusNotFound, "The user does not exist")
+		return
+	}
+
+	err = h.services.VerifyPassword(loginInput.Password, user)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid password")
+		return
+	}
+
+	response, err := h.services.Login(user)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to login")
 		return
 	}
 

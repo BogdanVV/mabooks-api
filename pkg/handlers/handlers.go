@@ -18,6 +18,7 @@ func NewHandlers(services *services.Services) *Handlers {
 
 func (h *Handlers) InitRoutes() *gin.Engine {
 	router := gin.New()
+	router.Use(middleware.CORSMiddleware())
 
 	router.GET("/health", checkHealth)
 
